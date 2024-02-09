@@ -113,6 +113,35 @@ Therefore, the closed form format for the recurrence relation of the algorithm's
 Therefore, the recurrence relation has the closed form solution \( T(n) = \frac{n(n-1)}{2} \).
 \newpage
 \section*{Question 3}
+The Min2 algorithm recursively divides an array into two halves to find the minimum value. Let's break down the analysis:
+\begin{enumerate}
+    \item Number of Recursions:
+    \begin{itemize}
+    \item Each recursive call divides the array into two halves.
+    \item Recursion continues until the base case is reached, where the array size becomes 1.
+    \item Therefore, the number of recursive calls made by the Min2 algorithm for an input array of size \( n \) can be expressed as \( \log_2{n} \).
+    \end{itemize}
+
+    \item Number of Comparisons:
+    \begin{itemize}
+    \item At each level of recursion, a constant number of comparisons is made to determine the minimum value within each half of the array.
+    \item Since the array is divided into halves at each level of recursion, the number of comparisons made during each level is logarithmic in the size of the array.
+    \end{itemize}
+    \item Work Done at Each Level:
+    \begin{itemize}
+    \item At each level of recursion, the array is divided into two halves.
+    \item The algorithm makes a total of \( O(\log n) \) levels of recursion, with each level performing a constant number of comparisons.
+    \end{itemize}
+\end{enumerate}
+
+Based on these observations, the recurrence relation for the Min2 algorithm's basic operation count:
+\[ T(n) = 2T\left(\frac{n}{2}\right) + O(\log n) \]
+
+\subsection*{Solving the recurrence relation}
+Using the Master Theorem, the recurrence relation can be solved as follows:
+\[ T(n) = 2T\left(\frac{n}{2}\right) + O(\log n) \]
+\[ a = 2, b = 2, f(n) = O(\log n) \]
+\[p = 0, k = 1\]
 \newpage
 \section*{Question 4}
 \newpage
