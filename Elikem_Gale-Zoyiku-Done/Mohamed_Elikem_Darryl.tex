@@ -1,0 +1,206 @@
+\documentclass{article}
+\usepackage[english]{babel}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{setspace}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{\textbf{CS456: Algorithm Design and Analysis}}
+\author{Mohamed Habib Soumahoro \\ Elikem Asudo Tsatsu Gale-Zoyiku \\ Darryl King}
+\date{\today}
+
+\begin{document}
+\doublespacing
+\maketitle
+\begin{center}
+    \begin{large}
+        \textbf{Final Project: Comparison of Recursive and Non-Recursive Algorithms for Solving 8-Queens Problem\\}
+    \end{large}
+\end{center}
+\newpage
+\section*{Introduction}
+\newpage
+\section*{Pseudocode of Algorithms}
+\begin{algorithm}
+    \caption{Non-recursive backtracking approach to generate all solutions to 8-Queens Problem}
+    \begin{algorithmic}[1]
+        \Procedure{nonRecursiveBacktrack}{board}
+            \State $stack \gets$ empty stack
+            \State push $(0, 0)$ onto stack
+            \While{stack is not empty}
+                \State $(row, col) \gets$ pop from stack
+                \If{row equals size of board}
+                    \If{board is valid solution}
+                        \State output solution
+                    \EndIf
+                \Else
+                    \For{each column in board}
+                        \If{position $(row, column)$ is safe}
+                            \State place queen at $(row, column)$
+                            \State push $(row + 1, 0)$ onto stack
+                            \State \textbf{break} from loop
+                        \EndIf
+                    \EndFor
+                \EndIf
+            \EndWhile
+        \EndProcedure
+    \end{algorithmic}
+    \end{algorithm}
+    
+    \begin{algorithm}
+    \caption{Recursive approach to generate all solutions to 8-Queens Problem}
+    \begin{algorithmic}[1]
+        \Procedure{recursiveBacktrack}{board, row}
+            \If{row equals size of board}
+                \If{board is valid solution}
+                    \State output solution
+                \EndIf
+            \Else
+                \For{each column in board}
+                    \If{position $(row, column)$ is safe}
+                        \State place queen at $(row, column)$
+                        \State \Call{recursiveBacktrack}{board, row + 1}
+                        \State remove queen from $(row, column)$
+                    \EndIf
+                \EndFor
+            \EndIf
+        \EndProcedure
+    \end{algorithmic}
+    \end{algorithm}
+\newpage
+
+\section*{Analysis of Algorithms}
+
+\subsection*{Theoretical Analysis}
+
+\subsubsection*{Recursive Algorithm}
+The recursive algorithm for the 8-Queens Problem can be analyzed through its recurrence relation. This approach places queens one by one in different columns, recursively moving to the next row if a safe placement is found.
+
+\textbf{Recurrence Relation:}
+
+The time complexity can be defined as \(T(n) = n \cdot T(n-1) + O(n^2)\), where:
+
+\begin{itemize}
+\item \(n \cdot T(n-1)\) represents the recursive attempt to solve the \((n-1)\)-Queens problem for each column in the current row.
+
+\item \(O(n^2)\) accounts for the time the isSafe function takes, which is called for each column of every row. Since isSafe checks a queen's position against up to \(n-1\) other queens for each of the \(n\) rows, it results in \(n^2\) operations.
+\end{itemize}
+
+To solve this relation, denote the base case as \(T(1) = O(1)\), indicating a constant time to place the last queen.
+
+\subsubsection*{Expansion using Recurrence Tree:}
+
+First Level (Level 1):
+
+\[T(n) = n \cdot T(n-1) + n^2\]
+
+Second Level (Level 2):
+
+\[T(n) = n \cdot [(n-1) \cdot T(n-2) + (n-1)^2] + n^2\]
+
+\[= n(n-1) \cdot T(n-2) + n(n-1)^2 + n^2\]
+
+Third Level (Level 3):
+
+\[T(n) = n(n-1) \cdot [(n-2) \cdot T(n-3) + (n-2)^2] + n(n-1)^2 + n^2\]
+
+\[= n(n-1)(n-2) \cdot T(n-3) + n(n-1)(n-2)^2 + n(n-1)^2 + n^2\]
+
+Generalizing to Level \(k\):
+
+Extending this pattern to a general level \(k\), where \(1 \leq k \leq n\). At level \(k\), we have recursively placed \(k\) queens and are solving the subproblem for placing the next queen.
+
+\[T(n) = n(n-1)(n-2) \cdots (n-k+1) \cdot T(n-k) + \sum_{i=0}^{k-1} n(n-1)(n-2) \cdots (n-i) \cdot (n-i)^2\]
+
+The first part of this expression represents the recursive call to solve the subproblem of placing the remaining queens. The second part, the summation, accounts for the work done at each level up to \(k\), including the square of the number of operations at each level due to the isSafe checks.
+
+When \(k = n-1\), we reach the base case for placing the last queen:
+
+\[T(n) = n! \cdot T(1) + \sum_{i=0}^{n-1} n(n-1)(n-2) \cdots (n-i) \cdot (n-i)^2\]
+
+Since \(T(1)\) is constant, denoted as \(c\), and considering that \(n! \cdot c\) can be simplified to \(O(n!)\), the dominating term in this expansion is the factorial growth of \(n!\), indicating the overall time complexity of \(O(n!)\) for the recursive algorithm.
+
+
+\subsubsection*{Non-Recursive (Backtracking) Algorithm}
+We employ a cost-counting approach for the non-recursive backtracking
+algorithm, considering the iterative steps to place queens on the board
+and backtrack when necessary.
+
+\textbf{Cost Counting and Summation:}
+
+\begin{itemize}
+    \item The algorithm iteratively tries to place each queen in a row, moving to the next row if successful and backtracking when encountering a conflict.
+    \item For each queen placement, the algorithm performs $n$ checks (one per column), and for each check, the \texttt{isSafe} function is invoked, resulting in $O(n)$ operations per row.
+\end{itemize}
+
+\textbf{Time Complexity Estimation:}
+
+The time complexity involves the cost of attempting to place queens across all rows and the backtracking steps. While exact enumeration is complex due to the variable backtracking depth, an upper bound estimate can be given by $O(n \cdot n!)$. This accounts for the $O(n)$ operations per placement attempt across $n!$ possible arrangements.
+
+\textbf{Summary:}
+
+The recursive algorithm's complexity is dominantly factorial ($O(n!)$) due to the depth of recursive calls and the operations performed at each level. The non-recursive algorithm, while also exploring a factorial number of configurations, incorporates an iterative approach with explicit state management, leading to a similar but distinctively characterized $O(n \cdot n!)$ complexity, where the factor of $n$ reflects the iterative operations per queen placement.
+
+\subsection*{Experimental Analysis}
+
+The empirical evaluation of the recursive and non-recursive algorithms for solving the 8-Queens Problem was designed to observe and compare their runtime performances under equivalent computational conditions. Both programs were executed concurrently in separate threads to ensure a fair comparison by minimizing potential variances in CPU load and resource allocation that might favor one program over the other.
+
+\subsubsection*{Testing Methodology}
+
+The concurrent execution setup involved running the recursive and non-recursive algorithms within their respective threads, initiating them simultaneously. This approach aimed to mimic a controlled environment where both algorithms compete equally for system resources, providing an unbiased performance comparison platform.
+
+Each algorithm was subjected to 10 execution rounds, timed from start to completion. The timing captured included the entire duration of the algorithm's execution, from initialization to discovering all 92 solutions for the 8-Queens Problem.
+
+\subsubsection*{Observations}
+
+The outcomes of the ten rounds of testing presented an intriguing pattern: the non-recursive algorithm outperformed the recursive algorithm in half of the trials, and conversely, the recursive algorithm outperformed the non-recursive algorithm in the other half. This parity in performance was unexpected, especially considering the theoretical analysis, which suggested that the presence of a linear factor in the non-recursive algorithm's complexity ($O(n \cdot n!)$) might lead to a consistently slower performance compared to the recursive algorithm's factorial complexity ($O(n!)$).
+
+\subsubsection*{Analysis of Results}
+
+The balanced performance between the two algorithms, where each alternated in outperforming the other across multiple trials, led to an inconclusive verdict on which algorithm could be deemed superior based on execution time alone. This result was particularly surprising given the expectation of a marked difference in performance due to the non-recursive algorithm's additional linear factor.
+
+Several factors could account for this observed parity:
+
+\begin{itemize}
+    \item Overhead of Recursion: The recursive algorithm, while theoretically more straightforward, suffers from the overhead associated with deep recursive calls, including increased use of stack space and the costs associated with entering and exiting numerous function calls.
+    \item System Resource Contention: Despite running the algorithms concurrently to ensure fairness, the underlying system's threads and CPU scheduling management could introduce performance variability. This is especially relevant in multi-threading environments where the allocation of CPU time can be uneven.
+\end{itemize}
+
+Given the mixed results from the experimental analysis, no definitive conclusion could be drawn about the superior algorithm in terms of runtime performance. The expectation of a noticeable performance lag in the non-recursive algorithm due to its higher theoretical complexity was not consistently borne out in practice. This outcome suggests that other factors, possibly related to the recursive algorithm's implementation and the computational overhead of recursion, play a significant role in influencing performance.
+
+\section*{Discussion of the results}
+
+The recursive algorithm, characterized by its theoretical time complexity of $O(n!)$, employs a straightforward approach that places queens successively and checks for conflicts at each step. The use of recursion simplifies the conceptual understanding and implementation of the solution. However, this approach introduces significant overhead due to the depth of recursive calls required to explore the solution space. Each placement of a queen involves a new level of recursion, where the algorithm checks all potential placements for the next queen. This process involves the computational cost of the \texttt{isSafe()} checks, which grow quadratically with the number of queens already placed and incur the overhead associated with recursive function calls.
+
+Conversely, the non-recursive backtracking algorithm, which a priori might seem less efficient with a hypothesized time complexity of $O(n \cdot n!)$, demonstrates superior empirical performance in our tests. This algorithm eschews the recursive call stack in favor of an explicit stack to manage the state of queen placements. This method allows for direct and efficient backtracking without the overhead of recursive function calls. The iterative nature of this approach, coupled with explicit control over the execution stack, likely contributes to its enhanced performance. It is essential to consider that while both algorithms theoretically explore the same solution space, how they backtrack and manage state can significantly impact actual runtime.
+
+The observed performance disparity, with the non-recursive algorithm often running in nearly half the time of the recursive version, underscores several factors beyond mere theoretical complexity. Firstly, the overhead of recursive calls in the recursive algorithm cannot be understated; each call consumes stack space and adds to the execution time. Secondly, the efficiency of state management in the non-recursive approach allows for quicker backtracking and exploration of the solution space.
+
+These findings illuminate a facet of algorithmic performance, where theoretical complexity provides a framework for understanding computational cost but may not fully predict empirical performance. Factors such as implementation details, overhead costs, and the efficiency of state management play pivotal roles in the practical effectiveness of algorithms.
+
+In conclusion, while the recursive algorithm offers a conceptually
+straightforward solution to the 8-Queens Problem, the non-recursive
+backtracking algorithm demonstrates superior performance in practice.
+This comparison highlights the importance of considering practical
+execution characteristics and implementation efficiencies when analyzing
+algorithmic solutions, underscoring that lower theoretical complexity
+does not always translate to better empirical performance.
+
+\section*{Conclusion}
+In conclusion, while the recursive algorithm offers a slight improvement
+in time complexity over the backtracking algorithm for the 8-Queens
+Problem, this improvement is still within the realm of exponential time
+complexity. Both algorithms face the inherent challenge posed by the
+factorial growth rate of the Problem's search space,
+making them unusable for larger board sizes. However, the fundamental
+nature of the Problem dictates that both algorithms exhibit exponential
+time complexity, making them impractical for large problem sizes.
+Therefore, when choosing between the two algorithms for solving the
+8-Queens Problem, considerations such as implementation simplicity, code
+readability, and ease of understanding may outweigh the marginal
+differences in time complexity.
+
+\end{document}
